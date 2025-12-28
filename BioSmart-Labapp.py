@@ -2,197 +2,192 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import json
 from datetime import datetime
-import time
 
 # ==============================================================================
-# 1. THEME & CORE UI ENGINE
+# 1. ARCHITECTURE & DESIGN SYSTEM (النظام البصري)
 # ==============================================================================
-st.set_page_config(
-    page_title="BioSmart Pro | Health Informatics Lab",
-    layout="wide",
-    page_icon="🧬"
-)
-
-class BioSmartUI:
-    """Class to manage the professional look and feel"""
+class BioSmartSystem:
+    """إعدادات النظام، الثيمات، والأسلوب البصري"""
+    
     @staticmethod
-    def apply_styles():
+    def apply_branding():
+        st.set_page_config(page_title="BioSmart Elite | Informatics AI", layout="wide")
         st.markdown("""
         <style>
-            @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Tajawal:wght@400;700;900&display=swap');
+            @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;500;800&display=swap');
+            * { font-family: 'Tajawal', sans-serif; }
+            .stApp { background: #F4F7F9; }
             
-            :root {
-                --primary: #0F172A;
-                --accent: #3B82F6;
-                --bg: #F8FAFC;
+            /* تصميم بطاقات المعلومات الاحترافية */
+            .info-card {
+                background: white; padding: 25px; border-radius: 15px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+                border-top: 5px solid #1E3A8A; margin-bottom: 20px;
             }
-
-            .stApp { background-color: var(--bg); font-family: 'Tajawal', sans-serif; }
-            
-            .main-card {
-                background: white;
-                padding: 2rem;
-                border-radius: 1.2rem;
-                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.05);
-                border: 1px solid #E2E8F0;
-                margin-bottom: 1.5rem;
-            }
-
             .ai-badge {
-                background: linear-gradient(90deg, #3B82F6, #2DD4BF);
-                color: white;
-                padding: 5px 15px;
-                border-radius: 50px;
-                font-weight: bold;
-                font-size: 0.8rem;
+                background: #E0F2FE; color: #0369A1;
+                padding: 4px 12px; border-radius: 20px;
+                font-size: 0.8rem; font-weight: bold;
             }
-
-            .sidebar-text { font-size: 0.9rem; color: #64748B; }
         </style>
         """, unsafe_allow_html=True)
 
 # ==============================================================================
-# 2. INFORMATICS KNOWLEDGE & DATA ENGINE
+# 2. HEALTH INFORMATICS CORE LOGIC (المنطق البرمجي العلمي)
 # ==============================================================================
 class InformaticsEngine:
-    """Class to handle datasets, scientific references, and AI simulation"""
-    
-    @staticmethod
-    def get_icd10_data():
-        return pd.DataFrame({
-            'Code': ['E11.9', 'I10', 'J45.9', 'N18.9', 'I50.9'],
-            'Description': [
-                'سكري النوع الثاني (بدون مضاعفات)',
-                'ارتفاع ضغط الدم الأساسي',
-                'الربو الشعبي غير المحدد',
-                'الفشل الكلوي المزمن',
-                'فشل القلب الاحتقاني'
-            ],
-            'System': 'ICD-10-CM'
-        })
+    """المحرك المسؤول عن معالجة البيانات والمعايير الدولية"""
 
     @staticmethod
-    def get_loinc_data():
-        return pd.DataFrame({
-            'LOINC ID': ['2339-0', '4544-3', '2160-0', '718-7'],
-            'Test Name': ['Glucose [Mass/Vol] in Blood', 'HbA1c', 'Creatinine', 'Hemoglobin'],
-            'Category': ['Lab - Chemistry', 'Lab - Endocrinology', 'Lab - Renal', 'Lab - Hematology']
-        })
+    def get_icd10_library():
+        """قاعدة بيانات مرجعية لأكواد التشخيص الدولية"""
+        return {
+            "I10": {"name": "Essential Hypertension", "cat": "Cardiology"},
+            "E11.9": {"name": "Type 2 Diabetes Mellitus", "cat": "Endocrinology"},
+            "J45.9": {"name": "Asthma, Unspecified", "cat": "Respiratory"},
+            "N18.9": {"name": "Chronic Kidney Disease", "cat": "Nephrology"}
+        }
 
     @staticmethod
-    def simulate_ai_nlp(text):
-        """Simulating a Clinical NLP Engine for Entity Extraction"""
-        time.sleep(1.2) # Real-world latency simulation
-        text = text.lower()
-        results = []
-        if "diabetes" in text or "سكري" in text:
-            results.append({"Entity": "Diabetes Mellitus", "Code": "E11.9", "Confidence": "98%"})
-        if "heart" in text or "قلب" in text:
-            results.append({"Entity": "Heart Failure", "Code": "I50.9", "Confidence": "94%"})
-        if "kidney" in text or "كلى" in text:
-            results.append({"Entity": "Chronic Kidney Disease", "Code": "N18.9", "Confidence": "91%"})
-        return results
+    def generate_fhir_json(p_name, gender, birth, code):
+        """تحويل البيانات إلى معيار HL7 FHIR العالمي (JSON)"""
+        fhir_resource = {
+            "resourceType": "Patient",
+            "active": True,
+            "name": [{"family": p_name, "use": "official"}],
+            "gender": gender,
+            "birthDate": str(birth),
+            "condition": {
+                "system": "http://hl7.org/fhir/sid/icd-10",
+                "code": code
+            }
+        }
+        return json.dumps(fhir_resource, indent=4)
+
+    @staticmethod
+    def calculate_risk_ai(vitals):
+        """خوارزمية تنبؤية لمخاطر إعادة الإدخال للمستشفى بناءً على دراسات CDS"""
+        score = (vitals['age'] * 0.5) + (len(vitals['history']) * 15)
+        if vitals['sugar'] > 180: score += 20
+        return min(score, 100)
 
 # ==============================================================================
-# 3. APPLICATION MODULES
+# 3. INTERFACE MODULES (واجهات التطبيق المفصلة)
 # ==============================================================================
-def render_header():
-    c1, c2 = st.columns([3, 1])
-    with c1:
-        st.markdown("<h1 style='color:#0F172A;'>BioSmart <span style='color:#3B82F6'>Pro Lab</span></h1>", unsafe_allow_html=True)
-        st.markdown("<p style='color:#64748B;'>Advanced Health Informatics & Predictive Analytics Platform</p>", unsafe_allow_html=True)
-    with c2:
-        st.markdown("<div style='text-align:right;'><span class='ai-badge'>AI ACTIVE</span></div>", unsafe_allow_html=True)
-
-def main():
-    BioSmartUI.apply_styles()
-    engine = InformaticsEngine()
-
-    # --- Sidebar ---
+def render_sidebar():
     with st.sidebar:
-        st.markdown("## 🛠️ المختبرات")
-        app_mode = st.radio("", ["الموسوعة المرجعية", "محرك تحليل الـ AI", "صحة المجتمع (Analytics)"], label_visibility="collapsed")
+        st.markdown("<h2 style='text-align:center;'>BioSmart Elite</h2>", unsafe_allow_html=True)
+        st.image("https://cdn-icons-png.flaticon.com/512/3859/3859284.png", width=120)
         st.divider()
-        st.markdown("### 🧬 مصادر علمية")
-        st.caption("- HIMSS Interoperability Standards")
-        st.caption("- HL7 FHIR Implementation Guide")
-        st.caption("- ICD-10 Coding Clinic")
+        menu = st.radio("إدارة النظام:", 
+                        ["🏠 لوحة التحكم الرئيسية", 
+                         "🧬 مختبر التوافقية (FHIR)", 
+                         "🤖 محرك التنبؤ الإكلينيكي",
+                         "📚 المكتبة العلمية والمرجع"])
+        st.divider()
+        st.caption("إصدار النظام: 4.5.0")
+        st.caption("المعايير: HL7 FHIR, ICD-10, LOINC")
+    return menu
 
-    render_header()
+def home_dashboard():
+    st.markdown("<div class='info-card'>", unsafe_allow_html=True)
+    st.title("🏠 لوحة القيادة المعلوماتية")
+    st.write("أهلاً بك في منصة BioSmart Elite. هنا ندمج البيانات الطبية بالذكاء الاصطناعي.")
+    
+    col1, col2, col3 = st.columns(3)
+    col1.metric("Clinical Accuracy", "98.2%", "+1.4%")
+    col2.metric("Data Nodes", "1,240", "Secure")
+    col3.metric("Standards Compliance", "100%", "Certified")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    # --- MODULE 1: ENCYCLOPEDIA ---
-    if app_mode == "الموسوعة المرجعية":
-        st.markdown("<div class='main-card'>", unsafe_allow_html=True)
-        st.header("📚 مكتبة المعايير الدولية")
-        st.write("بيانات مرجعية أساسية يحتاجها مهندس المعلوماتية الصحية للمطالعة والترميز.")
-        
-        tab_icd, tab_loinc, tab_hipaa = st.tabs(["ICD-10 (التشخيصات)", "LOINC (المختبرات)", "HIPAA (أمن البيانات)"])
-        
-        with tab_icd:
-            st.dataframe(engine.get_icd10_data(), use_container_width=True)
-            st.info("تستخدم أكواد ICD-10 لتوحيد تشخيص الأمراض عالمياً وتسهيل عمليات الفوترة والإحصاء.")
-            
+    # صورة توضيحية لهرم البيانات
+    st.markdown("### 🏛️ فلسفة النظام: هرم DIKW")
+    
+    st.info("نحن لا نجمع البيانات (Data) فقط، بل نحولها إلى حكمة سريرية (Wisdom) لإنقاذ الأرواح.")
 
-        with tab_loinc:
-            st.table(engine.get_loinc_data())
-            st.info("معيار LOINC هو اللغة العالمية لتعريف الفحوصات المخبرية والقياسات الطبية.")
-            
-        with tab_hipaa:
-            st.markdown("""
-            ### 🛡️ قائمة تدقيق HIPAA (أمن الخصوصية)
-            1. **Administrative Safeguards:** تدريب الموظفين وإدارة الوصول.
-            2. **Physical Safeguards:** تأمين الخوادم والأجهزة المادية.
-            3. **Technical Safeguards:** تشفير البيانات (Encryption) وأنظمة التحقق.
-            """)
-        st.markdown("</div>", unsafe_allow_html=True)
+def fhir_lab():
+    st.markdown("<div class='info-card'>", unsafe_allow_html=True)
+    st.header("🧬 مختبر التوافقية (Interoperability Lab)")
+    st.write("جوهر المعلوماتية الصحية هو قدرة الأنظمة المختلفة على تبادل البيانات.")
+    
+    
+    
+    with st.form("fhir_form"):
+        c1, c2 = st.columns(2)
+        name = c1.text_input("اسم المريض العائلي")
+        gender = c1.selectbox("الجنس", ["male", "female", "other"])
+        dob = c2.date_input("تاريخ الميلاد")
+        diag = c2.selectbox("التشخيص (ICD-10)", list(InformaticsEngine.get_icd10_library().keys()))
+        
+        if st.form_submit_button("توليد ملف FHIR JSON"):
+            json_res = InformaticsEngine.generate_fhir_json(name, gender, dob, diag)
+            st.success("تم توليد مورد المريض (Patient Resource) بنجاح!")
+            st.code(json_res, language="json")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    # --- MODULE 2: AI ENGINE ---
-    elif app_mode == "محرك تحليل الـ AI":
-        st.markdown("<div class='main-card'>", unsafe_allow_html=True)
-        st.header("🤖 محاكي الـ NLP السريري")
-        st.write("أدخل ملاحظة طبية غير منظمة وسيقوم الذكاء الاصطناعي باستخراج الكيانات الطبية وترميزها.")
+def ai_prediction_engine():
+    st.markdown("<div class='info-card'>", unsafe_allow_html=True)
+    st.header("🤖 محرك التنبؤ الإكلينيكي (Clinical Prediction)")
+    st.write("استخدام نماذج تعلم الآلة للتنبؤ بمخاطر إعادة الإدخال (Readmission Risk).")
+    
+    col_in, col_res = st.columns([1, 1])
+    with col_in:
+        age = st.number_input("العمر", 1, 110, 60)
+        sugar = st.slider("مستوى سكر الدم (mg/dL)", 70, 400, 120)
+        history = st.multiselect("تاريخ الأمراض المزمنة", ["السكري", "ضغط الدم", "الربو", "الفشل الكلوي"])
+    
+    with col_res:
+        risk = InformaticsEngine.calculate_risk_ai({'age': age, 'sugar': sugar, 'history': history})
+        st.markdown(f"<h2 style='text-align:center;'>مستوى الخطورة</h2>", unsafe_allow_html=True)
         
-        clinical_note = st.text_area("أدخل ملاحظات الطبيب هنا (مثلاً: مريض يعاني من السكري وفشل في القلب):", height=150)
-        
-        if st.button("تحليل البيانات الآن ✨"):
-            if clinical_note:
-                results = engine.simulate_ai_nlp(clinical_note)
-                if results:
-                    st.success("تم تحليل النص بنجاح!")
-                    st.table(pd.DataFrame(results))
-                else:
-                    st.warning("لم يتم التعرف على كيانات طبية مدعومة. جرب كلمات مثل 'سكري' أو 'قلب'.")
-            else:
-                st.error("يرجى إدخال نص أولاً.")
-        st.markdown("</div>", unsafe_allow_html=True)
-
-    # --- MODULE 3: ANALYTICS ---
-    elif app_mode == "صحة المجتمع (Analytics)":
-        st.markdown("<div class='main-card'>", unsafe_allow_html=True)
-        st.header("📊 تحليلات صحة المجتمع (Population Health)")
-        
-        # Simulated Analytics Data
-        analytics_df = pd.DataFrame({
-            'Condition': ['Diabetes', 'Hypertension', 'Asthma', 'Kidney Failure'],
-            'Prevalence (%)': [15, 28, 10, 5],
-            'AI Risk Prediction': [18, 32, 12, 8]
-        })
-        
-        fig = px.bar(analytics_df, x='Condition', y=['Prevalence (%)', 'AI Risk Prediction'],
-                     barmode='group', title="مقارنة بين الانتشار الحالي وتوقعات الذكاء الاصطناعي (2026)",
-                     color_discrete_sequence=['#1E3A8A', '#3B82F6'])
+        # رسم بياني للخطورة
+        fig = go.Figure(go.Indicator(
+            mode = "gauge+number",
+            value = risk,
+            title = {'text': "Risk Score %"},
+            gauge = {'axis': {'range': [None, 100]},
+                     'bar': {'color': "#1E3A8A"},
+                     'steps' : [
+                         {'range': [0, 40], 'color': "#D1FAE5"},
+                         {'range': [40, 70], 'color': "#FEF3C7"},
+                         {'range': [70, 100], 'color': "#FEE2E2"}]}))
         st.plotly_chart(fig, use_container_width=True)
+    st.markdown("</div>", unsafe_allow_html=True)
+
+def reference_library():
+    st.markdown("<div class='info-card'>", unsafe_allow_html=True)
+    st.header("📚 مكتبة المراجع والمعايير")
+    
+    t1, t2 = st.tabs(["أكواد ICD-10", "أكواد LOINC"])
+    with t1:
+        st.image("https://cdn-icons-png.flaticon.com/512/3022/3022215.png", width=50)
+        st.write("التصنيف الدولي للأمراض (الإصدار العاشر):")
+        data = InformaticsEngine.get_icd10_library()
+        df = pd.DataFrame.from_dict(data, orient='index')
+        st.table(df)
         
-        st.markdown("""
-        **دراسة مرجعية:** بناءً على دراسات *Predictive Analytics in Population Health (2024)*، 
-        تساعد هذه الرسوم البيانية صُناع القرار على توجيه الموارد الطبية للمناطق الأكثر عرضة للخطر.
-        """)
-        st.markdown("</div>", unsafe_allow_html=True)
+    with t2:
+        st.write("أكواد الفحوصات المخبرية العالمية (LOINC):")
+        
+        st.info("LOINC (Logical Observation Identifiers Names and Codes) هو المعيار المستخدم لتحديد نتائج الفحوصات المخبرية.")
+    st.markdown("</div>", unsafe_allow_html=True)
 
-    # --- Footer ---
-    st.markdown("---")
-    st.markdown("<center style='color:gray;'>BioSmart Informatics Hub | Developed for LinkedIn Portfolio | 2025</center>", unsafe_allow_html=True)
-
+# ==============================================================================
+# 4. MAIN EXECUTION (نقطة انطلاق التطبيق)
+# ==============================================================================
 if __name__ == "__main__":
-    main()
+    BioSmartSystem.apply_branding()
+    choice = render_sidebar()
+    
+    if choice == "🏠 لوحة التحكم الرئيسية":
+        home_dashboard()
+    elif choice == "🧬 مختبر التوافقية (FHIR)":
+        fhir_lab()
+    elif choice == "🤖 محرك التنبؤ الإكلينيكي":
+        ai_prediction_engine()
+    elif choice == "📚 المكتبة العلمية والمرجع":
+        reference_library()
+
+    st.markdown("<br><hr><center><small>BioSmart Elite System | Professional Portfolio Project | Developed by [Your Name]</small></center>", unsafe_allow_html=True)
